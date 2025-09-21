@@ -36,3 +36,22 @@ const material = new THREE.MeshStandardMaterial({ color: 0x2e6ff2 }); // 색상
 const box = new THREE.Mesh(geometry, material); // 도형과 재질을 합침
 scene.add(box); // 씬에 도형 추가
 renderer.render(scene, camera); // scene과 camera를 렌더러에 넣어줌
+
+// 애니메이션 함수
+function animate() {
+  box.rotation.y += 0.01; // y축으로 회전
+  renderer.render(scene, camera); // 매 프레임마다 렌더링
+  requestAnimationFrame(animate); // 브라우저에 애니메이션을 요청
+}
+
+animate(); // 애니메이션 실행
+
+// 반응형
+window.addEventListener("resize", () => {
+  // 1. 카메라 종횡비 조정
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix(); // 카메라 투영 행렬 갱신
+
+  // 2. 렌더러 크기 조정
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
