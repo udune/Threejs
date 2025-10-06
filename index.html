@@ -1,26 +1,39 @@
 <!DOCTYPE html>
 <html lang="ko">
   <head>
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Three.js 학습 페이지</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        overflow: hidden;
+      }
+      #result {
+        display: block;
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
     <script
       async
       src="https://ga.jspm.io/npm:es-module-shims@1.7.2/dist/es-module-shims.js"
     ></script>
-    <!-- es-module-shims : ES 모듈을 지원하지 않는 브라우저를 위한 폴리필 -->
     <script type="importmap">
       {
         "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.137.5/examples/jsm/"
+          "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+          "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
         }
       }
     </script>
-    <!-- importmap : 모듈 경로를 지정 -->
   </head>
   <body>
-    <canvas id="result" style="width: 500px; height: 500px"></canvas>
-    <!-- 캔버스 -->
+    <canvas id="result"></canvas>
     <script src="./src/index.js" type="module"></script>
-    <!-- 메인 스크립트 -->
   </body>
 </html>

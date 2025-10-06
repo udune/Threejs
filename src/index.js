@@ -1,57 +1,103 @@
-import * as THREE from "three"; // three.js 모듈을 모두 불러옴
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import createTree from "./mesh/tree.js";
+import createTangerine from "./mesh/tangerine.js";
 
-const $result = document.getElementById("result"); // 캔버스 요소 선택
+const $result = document.getElementById("result");
 
 // 1. Scene: 화면에서 보여주려는 객체를 담는 공간
-const scene = new THREE.Scene(); // 3D 공간
-scene.background = new THREE.Color(0xffe287); // 배경색 설정
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xffe287);
 
-// 2. Camera: Scene을 바라 볼 시점을 결정
+// 2. Camera: Scene을 바라볼 시점을 결정
 const camera = new THREE.PerspectiveCamera(
-  50, // 시야각(FOV)
-  $result.clientWidth / $result.clientHeight, // 종횡비(Aspect)
-  0.1, // near
-  1000 // far
+  50,
+  $result.clientWidth / $result.clientHeight,
+  0.1,
+  1000
 );
-camera.position.set(2, 2, 2); // 카메라 위치 설정
-camera.lookAt(0, 0, 0); // 카메라가 바라보는 위치 설정
+camera.position.set(2, 2, 2);
+camera.lookAt(0, 0, 0);
 
-// 3. Renderer: SceneCamera, 화면을 그려주는 역할
+// 3. Renderer: Scene과 Camera를 화면에 그려주는 역할
 const renderer = new THREE.WebGLRenderer({
   canvas: $result,
   antialias: true,
-}); // 캔버스 요소를 렌더러에 연결
-// renderer.setSize(window.innerWidth, window.innerHeight); // 렌더러 크기 설정
-renderer.setSize($result.clientWidth, $result.clientHeight); // 캔버스 요소 크기에 맞게 렌더러 크기 설정
-// document.body.appendChild(renderer.domElement); // 렌더러를 body에 추가
+});
+renderer.setSize($result.clientWidth, $result.clientHeight);
 
-// 3-1. Light: 빛
-const light = new THREE.DirectionalLight(0xffffff, 1); // 색상, 강도
-light.position.set(2, 4, 3); // 조명 위치 설정
-scene.add(light); // 씬에 조명 추가
+// 4. Light: 조명
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(2, 4, 3);
+scene.add(light);
 
-// 4. Mesh: 도형(Geometry) + 재질(Material)
-const geometry = new THREE.BoxGeometry(1, 1, 1); // 가로, 세로, 깊이
-const material = new THREE.MeshStandardMaterial({ color: 0x2e6ff2 }); // 색상
-const box = new THREE.Mesh(geometry, material); // 도형과 재질을 합침
-scene.add(box); // 씬에 도형 추가
-renderer.render(scene, camera); // scene과 camera를 렌더러에 넣어줌
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+//scene.add(ambientLight);
 
-// 애니메이션 함수
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(-2, 2, 0);
+directionalLight.target.position.set(0, 2, 0);
+scene.add(directionalLight);
+
+const dlHelper = new THREE.DirectionalLightHelper(
+  directionalLight,
+  1,
+  0xff0000
+);
+scene.add(dlHelper);
+
+const pointLight = new THREE.PointLight(0xffffff, 1);
+pointLight.position.set(0, 3, 0);
+scene.add(pointLight);
+
+const plHelper = new THREE.PointLightHelper(pointLight, 0.3, 0x00ff00);
+scene.add(plHelper);
+
+const spotLight = new THREE.SpotLight(0xffffff, 1, 0, Math.PI / 6, 0.5);
+spotLight.position.y = 2;
+scene.add(spotLight);
+
+const slHelper = new THREE.SpotLightHelper(spotLight, 0x0000ff);
+scene.add(slHelper);
+
+const hemisphereLight = new THREE.HemisphereLight(0xffaaaa, 0x00ff00, 1);
+scene.add(hemisphereLight);
+
+// 5. Meshes: 3D 객체들
+const tree = createTree();
+scene.add(tree);
+
+const tangerine = createTangerine();
+tangerine.scale.set(0.3, 0.3, 0.3);
+scene.add(tangerine);
+
+const axes = new THREE.AxesHelper(3);
+scene.add(axes);
+
+// 6. Controls: 카메라 조작
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableZoom = true;
+controls.enablePan = true;
+controls.enableRotate = true;
+controls.minDistance = 2;
+controls.maxDistance = 10;
+controls.minPolarAngle = Math.PI / 4;
+// controls.autoRotate = true;
+// controls.autoRotateSpeed = 5;
+controls.enableDamping = true;
+
+// 7. Animation: 애니메이션 루프
 function animate() {
-  box.rotation.y += 0.01; // y축으로 회전
-  renderer.render(scene, camera); // 매 프레임마다 렌더링
-  requestAnimationFrame(animate); // 브라우저에 애니메이션을 요청
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
 }
 
-animate(); // 애니메이션 실행
+animate();
 
-// 반응형
+// 8. Responsive: 반응형 처리
 window.addEventListener("resize", () => {
-  // 1. 카메라 종횡비 조정
   camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix(); // 카메라 투영 행렬 갱신
-
-  // 2. 렌더러 크기 조정
+  camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
